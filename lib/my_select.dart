@@ -17,7 +17,7 @@ class MySelect<T> extends StatelessWidget {
   final Widget? prefixIcon;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? contentPadding;
-  final PositionLabel? positionLabel;
+  final dynamic? positionLabel;
   final InputDecoration? nputDecoration;
   final String? label;
   final List<String> Function(List<T> items) toStringBuilder;
@@ -70,7 +70,7 @@ class MySelect<T> extends StatelessWidget {
                         contentPadding: contentPadding,
                         filled: backgroundColor != null ? true : false,
                         fillColor: backgroundColor,
-                        label: positionLabel == PositionLabel.input
+                        label: positionLabel.toString() == "input"
                             ? Text(label ?? "")
                             : null,
                         hintText: hintText,
@@ -281,5 +281,3 @@ class MySelect<T> extends StatelessWidget {
     );
   }
 }
-
-enum PositionLabel { top, bottom, left, right, input, none }
