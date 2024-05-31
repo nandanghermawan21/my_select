@@ -1,4 +1,4 @@
-import 'package:example2/option_model.dart';
+import 'package:example/option_model.dart';
 import 'package:flutter/material.dart';
 import 'package:my_select/main.dart';
 
