@@ -7,6 +7,7 @@ class MySelect<T> extends StatelessWidget {
   final List<T> items;
   final List<T> selectedItems;
   final String? Function(List<T>)? validator;
+  final ValueChanged<List<T>>? onChange;
   final InputDecoration? inputDecoration;
   final InputDecoration? errorDecoration;
   final TextStyle? errorTextStyle;
@@ -17,7 +18,7 @@ class MySelect<T> extends StatelessWidget {
   final Widget? prefixIcon;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? contentPadding;
-  final dynamic? positionLabel;
+  final dynamic positionLabel;
   final InputDecoration? nputDecoration;
   final String? label;
   final List<String> Function(List<T> items) toStringBuilder;
@@ -45,7 +46,8 @@ class MySelect<T> extends StatelessWidget {
       this.nputDecoration,
       required this.toStringBuilder,
       this.separator = ",",
-      this.hintText}) {
+      this.hintText,
+      this.onChange}) {
     controller.value.items = items.isNotEmpty ? items : controller.value.items;
     controller.value.selectedItems = selectedItems.isNotEmpty
         ? selectedItems
@@ -198,6 +200,8 @@ class MySelect<T> extends StatelessWidget {
                                       .onRemoveItem(d.selectedItems[index]);
                                   controller.updateTextController(
                                       toStringBuilder, separator);
+                                  onChange
+                                      ?.call(controller.value.selectedItems);
                                 },
                                 child: selectedBuilder(
                                   d.selectedItems[index],
@@ -218,6 +222,7 @@ class MySelect<T> extends StatelessWidget {
                                 controller.toogleItem(d.items[index]);
                                 controller.updateTextController(
                                     toStringBuilder, separator);
+                                onChange?.call(controller.value.selectedItems);
                               },
                               child: itemBuilder(items[index],
                                   controller.isSelected(items[index])),
