@@ -7,7 +7,6 @@ class MySelect<T> extends StatelessWidget {
   final List<T> items;
   final List<T> selectedItems;
   final String? Function(List<T>)? validator;
-  final ValueChanged<List<T>>? onChange;
   final InputDecoration? inputDecoration;
   final InputDecoration? errorDecoration;
   final TextStyle? errorTextStyle;
@@ -24,30 +23,39 @@ class MySelect<T> extends StatelessWidget {
   final List<String> Function(List<T> items) toStringBuilder;
   final String separator;
   final String? hintText;
+  final String? btnConfirmLabel;
+  final TextStyle? textStyleBtnConfirm;
+  final ButtonStyle? btnConfirmStyle;
+  final ValueChanged<List<T>>? onConfirmed;
+  final bool autoConfirm = false;
 
-  MySelect(
-      {required this.items,
-      this.selectedItems = const [],
-      this.validator,
-      super.key,
-      this.inputDecoration,
-      this.errorDecoration,
-      this.errorTextStyle,
-      required this.itemBuilder,
-      required this.controller,
-      required this.selectedBuilder,
-      this.borderRadius = 5,
-      this.suffixIcon,
-      this.prefixIcon,
-      this.backgroundColor,
-      this.contentPadding,
-      this.positionLabel,
-      this.label,
-      this.nputDecoration,
-      required this.toStringBuilder,
-      this.separator = ",",
-      this.hintText,
-      this.onChange}) {
+  MySelect({
+    required this.items,
+    this.selectedItems = const [],
+    this.validator,
+    super.key,
+    this.inputDecoration,
+    this.errorDecoration,
+    this.errorTextStyle,
+    required this.itemBuilder,
+    required this.controller,
+    required this.selectedBuilder,
+    this.borderRadius = 5,
+    this.suffixIcon,
+    this.prefixIcon,
+    this.backgroundColor,
+    this.contentPadding,
+    this.positionLabel,
+    this.label,
+    this.nputDecoration,
+    required this.toStringBuilder,
+    this.separator = ",",
+    this.hintText,
+    this.btnConfirmLabel,
+    this.textStyleBtnConfirm,
+    this.btnConfirmStyle,
+    this.onConfirmed,
+  }) {
     controller.value.items = items.isNotEmpty ? items : controller.value.items;
     controller.value.selectedItems = selectedItems.isNotEmpty
         ? selectedItems
@@ -160,7 +168,7 @@ class MySelect<T> extends StatelessWidget {
     );
   }
 
-  Future<T?> showMenuSelect(BuildContext context) {
+  Future<List<T?>> showMenuSelect(BuildContext context) {
     return showDialog(
       context: context,
       builder: (context) {
@@ -198,10 +206,13 @@ class MySelect<T> extends StatelessWidget {
                                 onTap: () {
                                   controller
                                       .onRemoveItem(d.selectedItems[index]);
-                                  controller.updateTextController(
-                                      toStringBuilder, separator);
-                                  onChange
-                                      ?.call(controller.value.selectedItems);
+                                  if (autoConfirm == true) {
+                                    controller.confirm();
+                                    controller.updateTextController(
+                                        toStringBuilder, separator);
+                                    onConfirmed
+                                        ?.call(controller.value.confirmedItems);
+                                  }
                                 },
                                 child: selectedBuilder(
                                   d.selectedItems[index],
@@ -222,13 +233,53 @@ class MySelect<T> extends StatelessWidget {
                                 controller.toogleItem(d.items[index]);
                                 controller.updateTextController(
                                     toStringBuilder, separator);
-                                onChange?.call(controller.value.selectedItems);
+                                if (autoConfirm == true) {
+                                  controller.confirm();
+                                  controller.updateTextController(
+                                      toStringBuilder, separator);
+                                  onConfirmed
+                                      ?.call(controller.value.confirmedItems);
+                                }
                               },
                               child: itemBuilder(items[index],
                                   controller.isSelected(items[index])),
                             );
                           }),
                         ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          autoConfirm == false
+                              ? ElevatedButton(
+                                  onPressed: () {
+                                    controller.confirm();
+                                    controller.updateTextController(
+                                        toStringBuilder, separator);
+                                    if (onConfirmed != null) {
+                                      onConfirmed?.call(
+                                          controller.value.confirmedItems);
+                                    } else {
+                                      Navigator.pop(context,
+                                          controller.value.confirmedItems);
+                                    }
+                                  },
+                                  style: btnConfirmStyle,
+                                  child: Text(
+                                    btnConfirmLabel ?? "Confirm",
+                                    style: textStyleBtnConfirm ??
+                                        Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium!
+                                            .copyWith(
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .primary,
+                                            ),
+                                  ),
+                                )
+                              : const SizedBox(),
+                        ],
                       )
                     ],
                   ),
@@ -238,7 +289,9 @@ class MySelect<T> extends StatelessWidget {
           ),
         );
       },
-    );
+    ).then((value) {
+      return value;
+    });
   }
 
   static Widget defauldItemBuilder(

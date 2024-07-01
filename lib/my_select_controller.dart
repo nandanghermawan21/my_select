@@ -22,6 +22,11 @@ class MySelectController<T> extends ValueNotifier<MySelectValue<T>> {
     return value.selectedItems.contains(item);
   }
 
+  void confirm() {
+    value.confirmedItems = List<T>.from(value.selectedItems);
+    commit();
+  }
+
   //toogle selection
   void toogleItem(T item) {
     if (isSelected(item)) {
@@ -34,7 +39,7 @@ class MySelectController<T> extends ValueNotifier<MySelectValue<T>> {
   //generateToString
   void updateTextController(
       List<String> Function(List<T>) generator, String separator) {
-    var textNew = generator(value.selectedItems).join(separator);
+    var textNew = generator(value.confirmedItems).join(separator);
     value.textEditingController.text = textNew;
   }
 

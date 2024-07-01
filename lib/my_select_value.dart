@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class MySelectValue<T> {
   List<T> items = <T>[];
   List<T> selectedItems = <T>[];
+  List<T> confirmedItems = <T>[];
   TextEditingController textEditingController = TextEditingController();
 
   bool isValid = true;
