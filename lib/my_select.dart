@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:my_select/my_select_controller.dart';
 import 'package:my_select/my_select_value.dart';
@@ -26,7 +28,7 @@ class MySelect<T> extends StatelessWidget {
   final String? btnConfirmLabel;
   final TextStyle? textStyleBtnConfirm;
   final ButtonStyle? btnConfirmStyle;
-  final ValueChanged<List<T>>? onConfirmed;
+  final Future<bool> Function(List<T>)? onConfirmed;
   final bool autoConfirm = false;
 
   MySelect({
@@ -257,8 +259,15 @@ class MySelect<T> extends StatelessWidget {
                                     controller.updateTextController(
                                         toStringBuilder, separator);
                                     if (onConfirmed != null) {
-                                      onConfirmed?.call(
-                                          controller.value.confirmedItems);
+                                      onConfirmed
+                                          ?.call(
+                                              controller.value.confirmedItems)
+                                          .then((value) {
+                                        if (value == true) {
+                                          Navigator.pop(context,
+                                              controller.value.confirmedItems);
+                                        }
+                                      });
                                     } else {
                                       Navigator.pop(context,
                                           controller.value.confirmedItems);

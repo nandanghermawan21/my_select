@@ -65,30 +65,35 @@ class _MyHomePageState extends State<MyHomePage> {
                     height: 10,
                   ),
                   MySelect<OptionModel>(
-                    controller: sampleWithForm,
-                    label: "MyDropDown With Form Validation",
-                    backgroundColor: Colors.white,
-                    items: OptionModel.dummyData,
-                    itemBuilder: (item, isSelected) =>
-                        MySelect.defauldItemBuilder(
-                            label: item.title ?? "",
+                      controller: sampleWithForm,
+                      label: "MyDropDown With Form Validation",
+                      backgroundColor: Colors.white,
+                      items: OptionModel.dummyData,
+                      itemBuilder: (item, isSelected) =>
+                          MySelect.defauldItemBuilder(
+                              label: item.title ?? "",
+                              context: context,
+                              isSelected: isSelected),
+                      selectedBuilder: (selected) =>
+                          MySelect.defaultSelectedBuilder(
+                            label: selected.title ?? "",
                             context: context,
-                            isSelected: isSelected),
-                    selectedBuilder: (selected) =>
-                        MySelect.defaultSelectedBuilder(
-                      label: selected.title ?? "",
-                      context: context,
-                    ),
-                    validator: (selected) {
-                      if (selected.isEmpty) {
-                        return 'Please select an option';
-                      }
-                      return null;
-                    },
-                    toStringBuilder: (items) {
-                      return items.map((e) => e.title ?? "").toList();
-                    },
-                  ),
+                          ),
+                      validator: (selected) {
+                        if (selected.isEmpty) {
+                          return 'Please select an option';
+                        }
+                        return null;
+                      },
+                      toStringBuilder: (items) {
+                        return items.map((e) => e.title ?? "").toList();
+                      },
+                      onConfirmed: (confirmed) {
+                        return Future.value().then((value) {
+                          debugPrint("onConfirmed");
+                          return true;
+                        });
+                      }),
                   const SizedBox(
                     height: 10,
                   ),
